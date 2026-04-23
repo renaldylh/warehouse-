@@ -1,6 +1,4 @@
-import React from 'react';
-import { Sidebar } from '../components/Sidebar';
-import { TopBar } from '../components/TopBar';
+import { Layout } from '../layouts/Layout';
 import { DataTable } from '../components/DataTable';
 import { ShoppingCart, Plus, Filter } from 'lucide-react';
 
@@ -14,31 +12,25 @@ const tableData = [
 
 export const OrderPage = () => {
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <TopBar title="Order Management" />
-        <main className="p-8 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <ShoppingCart size={24} className="text-primary-600" />
-              Active Orders
-            </h2>
-            <div className="flex gap-3">
-              <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 flex items-center gap-2">
-                <Filter size={18} /> Filter
-              </button>
-              <button className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-bold flex items-center gap-2">
-                <Plus size={18} /> New Order
-              </button>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <DataTable title="Recent Orders" headers={tableHeaders} data={tableData} />
-            <DataTable title="Order History" headers={tableHeaders} data={tableData.map(r => [r[0], r[1], r[2], r[3], 'Completed'])} />
-          </div>
-        </main>
+    <Layout title="Order Management">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <h2 className="text-lg lg:text-xl font-bold text-slate-800 flex items-center gap-2">
+          <ShoppingCart size={24} className="text-primary-600" />
+          Active Orders
+        </h2>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button className="flex-1 sm:flex-none px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs lg:text-sm font-bold text-slate-600 flex items-center justify-center gap-2">
+            <Filter size={18} /> Filter
+          </button>
+          <button className="flex-1 sm:flex-none px-4 py-2 bg-primary-600 text-white rounded-xl text-xs lg:text-sm font-bold flex items-center justify-center gap-2">
+            <Plus size={18} /> New Order
+          </button>
+        </div>
       </div>
-    </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <DataTable title="Recent Orders" headers={tableHeaders} data={tableData} />
+        <DataTable title="Order History" headers={tableHeaders} data={tableData.map(r => [r[0], r[1], r[2], r[3], 'Completed'])} />
+      </div>
+    </Layout>
   );
 };

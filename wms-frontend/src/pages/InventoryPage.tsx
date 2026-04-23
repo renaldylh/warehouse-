@@ -1,6 +1,4 @@
-import React from 'react';
-import { Sidebar } from '../components/Sidebar';
-import { TopBar } from '../components/TopBar';
+import { Layout } from '../layouts/Layout';
 import { DataTable } from '../components/DataTable';
 import { Search, Filter, Plus } from 'lucide-react';
 
@@ -18,39 +16,32 @@ const tableData = [
 
 export const InventoryPage = () => {
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <TopBar title="Inventory Management" />
-        
-        <main className="p-8 space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex-1 max-w-lg relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
-                <Search size={20} />
-              </div>
-              <input 
-                type="text" 
-                placeholder="Cari SKU atau nama produk..."
-                className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-slate-800 shadow-sm"
-              />
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-all active:scale-95">
-                <Filter size={18} />
-                Filter
-              </button>
-              <button className="px-6 py-3 bg-primary-600 text-white rounded-xl text-sm font-bold hover:bg-primary-700 flex items-center gap-2 shadow-lg shadow-primary-200 transition-all active:scale-95">
-                <Plus size={18} />
-                Produk Baru
-              </button>
-            </div>
+    <Layout title="Inventory Management">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="w-full md:flex-1 md:max-w-lg relative group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
+            <Search size={20} />
           </div>
-
-          <DataTable headers={tableHeaders} data={tableData} />
-        </main>
+          <input 
+            type="text" 
+            placeholder="Cari SKU atau nama produk..."
+            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-sm lg:text-base text-slate-800 shadow-sm"
+          />
+        </div>
+        
+        <div className="flex items-center gap-2 lg:gap-3">
+          <button className="flex-1 lg:flex-none px-4 lg:px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs lg:text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95">
+            <Filter size={18} />
+            Filter
+          </button>
+          <button className="flex-1 lg:flex-none px-4 lg:px-6 py-3 bg-primary-600 text-white rounded-xl text-xs lg:text-sm font-bold hover:bg-primary-700 flex items-center justify-center gap-2 shadow-lg shadow-primary-200 transition-all active:scale-95">
+            <Plus size={18} />
+            Produk Baru
+          </button>
+        </div>
       </div>
-    </div>
+
+      <DataTable headers={tableHeaders} data={tableData} />
+    </Layout>
   );
 };

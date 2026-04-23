@@ -1,5 +1,4 @@
-import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface SummaryCardProps {
   label: string;
@@ -17,14 +16,15 @@ const colorMap = {
 
 export const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, icon: Icon, color }) => {
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-300">
-      <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-xl ${colorMap[color]}`}>
-          <Icon size={24} />
+    <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="flex items-center gap-3 lg:gap-4">
+        <div className={`p-2 lg:p-3 rounded-xl ${colorMap[color]}`}>
+          <Icon size={20} className="lg:hidden" />
+          <Icon size={24} className="hidden lg:block" />
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <h3 className="text-2xl font-bold text-slate-900">{value}</h3>
+          <p className="text-xs lg:text-sm font-medium text-slate-500 uppercase tracking-wider">{label}</p>
+          <h3 className="text-xl lg:text-2xl font-bold text-slate-900">{value}</h3>
         </div>
       </div>
     </div>

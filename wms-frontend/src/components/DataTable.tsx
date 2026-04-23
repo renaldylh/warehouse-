@@ -18,28 +18,28 @@ export const DataTable: React.FC<DataTableProps> = ({ title, headers, data }) =>
           </button>
         </div>
       )}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
+      <div className="overflow-x-auto scrollbar-hide">
+        <table className="w-full text-left min-w-[600px] lg:min-w-0">
           <thead className="bg-slate-50 border-b border-slate-100">
             <tr>
               {headers.map((header) => (
-                <th key={header} className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <th key={header} className="px-4 lg:px-6 py-3 lg:py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">
                   {header}
                 </th>
               ))}
-              <th className="px-6 py-4"></th>
+              <th className="px-4 lg:px-6 py-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {data.map((row, i) => (
               <tr key={i} className="hover:bg-slate-50 transition-colors group">
                 {row.map((cell, j) => (
-                  <td key={j} className="px-6 py-4 text-sm text-slate-600">
+                  <td key={j} className="px-4 lg:px-6 py-3 lg:py-4 text-xs lg:text-sm text-slate-600 whitespace-nowrap">
                     {cell}
                   </td>
                 ))}
-                <td className="px-6 py-4 text-right">
-                  <button className="text-slate-400 hover:text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                <td className="px-4 lg:px-6 py-3 lg:py-4 text-right">
+                  <button className="text-slate-400 hover:text-primary-600 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                     Edit
                   </button>
                 </td>
@@ -49,8 +49,8 @@ export const DataTable: React.FC<DataTableProps> = ({ title, headers, data }) =>
         </table>
       </div>
       
-      <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-        <p className="text-sm text-slate-500">Showing 1 to {data.length} of {data.length} entries</p>
+      <div className="px-4 lg:px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-xs lg:text-sm text-slate-500">Showing {data.length} entries</p>
         <div className="flex items-center gap-2">
           <button className="p-2 rounded-lg border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 disabled:opacity-50">
             <ChevronLeft size={18} />
