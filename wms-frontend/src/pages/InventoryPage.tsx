@@ -1,20 +1,39 @@
+import { useState, useEffect } from 'react';
 import { Layout } from '../layouts/Layout';
 import { DataTable } from '../components/DataTable';
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Filter, Plus, RefreshCw } from 'lucide-react';
+import { productService } from '../services/api';
 
-const tableHeaders = ['ID SKU', 'Nama Produk', 'Stok', 'Lokasi Bin', 'Status'];
-const tableData = [
-  ['PROD-001', 'Kaos Polos Putih M', '150 PCS', 'A-01-01', 'Stocked'],
-  ['PROD-002', 'Kaos Polos Putih L', '85 PCS', 'A-01-02', 'Stocked'],
-  ['PROD-003', 'Sweater Navy XL', '24 PCS', 'B-12-05', 'Low Stock'],
-  ['PROD-004', 'Celana Cargo Army', '60 PCS', 'C-04-12', 'Stocked'],
-  ['PROD-005', 'Jaket Bomber Maroon', '12 PCS', 'B-02-01', 'Critical'],
-  ['PROD-006', 'Kaos V-Neck Black', '200 PCS', 'A-04-03', 'Stocked'],
-  ['PROD-007', 'Jeans Slim Fit 32', '45 PCS', 'C-01-02', 'Stocked'],
-  ['PROD-008', 'Kemeja Polka S', '18 PCS', 'B-08-04', 'Low Stock'],
-];
+const tableHeaders = ['ID SKU', 'Nama Produk', 'Stok', 'Kategori', 'Status'];
 
 export const InventoryPage = () => {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await productService.getAll();
+      setProducts(data);
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const tableData = products.map((p: any) => [
+    p.sku,
+    p.name,
+    `${p.stock} PCS`,
+    p.category || '-',
+    p.stock > 50 ? 'Stocked' : p.stock > 10 ? 'Low Stock' : 'Critical'
+  ]);
+
   return (
     <Layout title="Inventory Management">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -30,6 +49,12 @@ export const InventoryPage = () => {
         </div>
         
         <div className="flex items-center gap-2 lg:gap-3">
+          <button 
+            onClick={fetchProducts}
+            className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-primary-600 transition-all active:scale-95"
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          </button>
           <button className="flex-1 lg:flex-none px-4 lg:px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs lg:text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95">
             <Filter size={18} />
             Filter

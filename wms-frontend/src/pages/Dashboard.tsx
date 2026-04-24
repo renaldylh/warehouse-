@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react';
 import { Layout } from '../layouts/Layout';
 import { SummaryCard } from '../components/SummaryCard';
 import { DataTable } from '../components/DataTable';
 import { Package, Inbox, ShoppingCart, Truck, RefreshCw, Download } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { dashboardService } from '../services/api';
 
 const chartData = [
   { name: 'Inventory', value: 400 },
@@ -23,18 +25,39 @@ const tableData = [
 ];
 
 export const Dashboard = () => {
+  const [stats, setStats] = useState({
+    inventory_count: 0,
+    receiving_count: 0,
+    order_count: 0,
+    shipping_count: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const data = await dashboardService.getStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
   return (
     <Layout title="Dashboard">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-hide">
-          <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap">
-            Today
-          </button>
-          <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap">
-            Sort by
-          </button>
-          <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary-600 flex-shrink-0">
-            <RefreshCw size={18} />
+          <button 
+            onClick={fetchStats}
+            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary-600 flex-shrink-0"
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
           </button>
         </div>
         
@@ -45,10 +68,10 @@ export const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
-        <SummaryCard label="Inventory" value="1,280" icon={Package} color="indigo" />
-        <SummaryCard label="Receiving" value="45" icon={Inbox} color="emerald" />
-        <SummaryCard label="Order" value="12" icon={ShoppingCart} color="amber" />
-        <SummaryCard label="Shipping" value="8" icon={Truck} color="blue" />
+        <SummaryCard label="Inventory" value={stats.inventory_count.toLocaleString()} icon={Package} color="indigo" />
+        <SummaryCard label="Receiving" value={stats.receiving_count.toLocaleString()} icon={Inbox} color="emerald" />
+        <SummaryCard label="Order" value={stats.order_count.toLocaleString()} icon={ShoppingCart} color="amber" />
+        <SummaryCard label="Shipping" value={stats.shipping_count.toLocaleString()} icon={Truck} color="blue" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -62,7 +85,12 @@ export const Dashboard = () => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={chartData}
+                  data={[
+                    { name: 'Inventory', value: stats.inventory_count },
+                    { name: 'Receiving', value: stats.receiving_count },
+                    { name: 'Order', value: stats.order_count },
+                    { name: 'Shipping', value: stats.shipping_count },
+                  ]}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
