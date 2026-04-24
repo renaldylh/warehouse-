@@ -35,7 +35,7 @@ func ConnectDB() {
 
 	// Auto migration
 	fmt.Println("Running Migrations...")
-	db.AutoMigrate(&models.Product{}, &models.MarketplaceMapping{}, &models.Order{})
+	db.AutoMigrate(&models.Product{}, &models.MarketplaceMapping{}, &models.Order{}, &models.Receiving{}, &models.Shipping{}, &models.User{})
 
 	DB = db
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 	"warehouse-wms-backend/internal/models"
 	"warehouse-wms-backend/pkg/database"
 	"github.com/joho/godotenv"
@@ -36,6 +37,26 @@ func main() {
 
 	for _, o := range orders {
 		database.DB.Create(&o)
+	}
+
+	// Seed Receiving
+	receivings := []models.Receiving{
+		{ReceptionID: "REC-101", Supplier: "Cotton Direct", ItemsReceived: "500 Rolls Fabric", Condition: "Good", Date: time.Now()},
+		{ReceptionID: "REC-102", Supplier: "Indigo Dye Co.", ItemsReceived: "20 Barrels", Condition: "Good", Date: time.Now()},
+	}
+
+	for _, r := range receivings {
+		database.DB.Create(&r)
+	}
+
+	// Seed Shipping
+	shippings := []models.Shipping{
+		{ShipmentID: "SHP-501", Destination: "Jakarta Hub", Courier: "JNE Express", Weight: "12.5 KG", Status: "In Transit", Date: time.Now()},
+		{ShipmentID: "SHP-502", Destination: "Bandung Store", Courier: "SiCepat", Weight: "5.2 KG", Status: "Delivered", Date: time.Now()},
+	}
+
+	for _, s := range shippings {
+		database.DB.Create(&s)
 	}
 
 	fmt.Println("Database seeded successfully!")

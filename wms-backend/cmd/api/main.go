@@ -26,10 +26,15 @@ func main() {
 	// Initialize Repositories
 	productRepo := repository.NewProductRepository(database.DB)
 	orderRepo := repository.NewOrderRepository(database.DB)
+	receivingRepo := repository.NewReceivingRepository(database.DB)
+	shippingRepo := repository.NewShippingRepository(database.DB)
 
 	// Initialize Handlers
 	productHandler := http_handler.NewProductHandler(productRepo)
 	dashboardHandler := http_handler.NewDashboardHandler(productRepo, orderRepo)
+	orderHandler := http_handler.NewOrderHandler(orderRepo)
+	receivingHandler := http_handler.NewReceivingHandler(receivingRepo)
+	shippingHandler := http_handler.NewShippingHandler(shippingRepo)
 
 	// Initialize Gin
 	r := gin.Default()
@@ -61,6 +66,17 @@ func main() {
 		api.GET("/products", productHandler.GetAllProducts)
 		api.GET("/products/:id", productHandler.GetProductByID)
 		api.POST("/products", productHandler.CreateProduct)
+		api.PUT("/products/:id", productHandler.UpdateProduct)
+		api.DELETE("/products/:id", productHandler.DeleteProduct)
+
+		// Orders
+		api.GET("/orders", orderHandler.GetAllOrders)
+
+		// Receiving
+		api.GET("/receiving", receivingHandler.GetAllReceivings)
+
+		// Shipping
+		api.GET("/shipping", shippingHandler.GetAllShippings)
 	}
 
 	// Start Server

@@ -9,6 +9,14 @@ const tableHeaders = ['ID SKU', 'Nama Produk', 'Stok', 'Kategori', 'Status'];
 export const InventoryPage = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    sku: '',
+    name: '',
+    category: '',
+    stock: 0,
+    base_price: 0
+  });
 
   const fetchProducts = async () => {
     try {
@@ -25,6 +33,18 @@ export const InventoryPage = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await productService.create(newProduct);
+      setIsModalOpen(false);
+      setNewProduct({ sku: '', name: '', category: '', stock: 0, base_price: 0 });
+      fetchProducts();
+    } catch (error) {
+      alert('Gagal menambah produk');
+    }
+  };
 
   const tableData = products.map((p: any) => [
     p.sku,
@@ -59,7 +79,10 @@ export const InventoryPage = () => {
             <Filter size={18} />
             Filter
           </button>
-          <button className="flex-1 lg:flex-none px-4 lg:px-6 py-3 bg-primary-600 text-white rounded-xl text-xs lg:text-sm font-bold hover:bg-primary-700 flex items-center justify-center gap-2 shadow-lg shadow-primary-200 transition-all active:scale-95">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex-1 lg:flex-none px-4 lg:px-6 py-3 bg-primary-600 text-white rounded-xl text-xs lg:text-sm font-bold hover:bg-primary-700 flex items-center justify-center gap-2 shadow-lg shadow-primary-200 transition-all active:scale-95"
+          >
             <Plus size={18} />
             Produk Baru
           </button>
@@ -67,6 +90,66 @@ export const InventoryPage = () => {
       </div>
 
       <DataTable headers={tableHeaders} data={tableData} />
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="font-bold text-slate-800">Tambah Produk Baru</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+            </div>
+            <form onSubmit={handleAddProduct} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">SKU</label>
+                <input 
+                  required
+                  type="text" 
+                  value={newProduct.sku}
+                  onChange={e => setNewProduct({...newProduct, sku: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-primary-500 transition-all"
+                  placeholder="Contoh: PROD-001"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Produk</label>
+                <input 
+                  required
+                  type="text" 
+                  value={newProduct.name}
+                  onChange={e => setNewProduct({...newProduct, name: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-primary-500 transition-all"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Kategori</label>
+                  <input 
+                    type="text" 
+                    value={newProduct.category}
+                    onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-primary-500 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Stok Awal</label>
+                  <input 
+                    type="number" 
+                    value={newProduct.stock}
+                    onChange={e => setNewProduct({...newProduct, stock: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-primary-500 transition-all"
+                  />
+                </div>
+              </div>
+              <button 
+                type="submit"
+                className="w-full py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 shadow-lg shadow-primary-200 transition-all active:scale-95 mt-2"
+              >
+                Simpan Produk
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

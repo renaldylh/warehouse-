@@ -48,3 +48,27 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, product)
 }
+
+func (h *ProductHandler) UpdateProduct(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var product models.Product
+	if err := c.ShouldBindJSON(&product); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	product.ID = uint(id)
+	if err := h.repo.Update(&product); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, product)
+}
+
+func (h *ProductHandler) DeleteProduct(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := h.repo.Delete(uint(id)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Product deleted"})
+}
