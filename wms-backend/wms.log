@@ -1,1 +1,3 @@
 {"level":"info","ts":"2026-05-05T14:01:52.522+0700","caller":"api/main.go:120","msg":"Server started successfully","port":"4000"}
+{"level":"info","ts":"2026-05-05T14:15:03.186+0700","caller":"api/main.go:120","msg":"Server started successfully","port":"4000"}
+{"level":"info","ts":"2026-05-05T14:17:48.768+0700","caller":"http/auth_handler.go:90","msg":"User logged in","username":"admin"}

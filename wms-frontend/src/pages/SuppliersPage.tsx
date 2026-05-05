@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '../layouts/Layout';
 import { DataTable } from '../components/DataTable';
-import { Search, Plus, RefreshCw, UserPlus } from 'lucide-react';
+import { Search, Plus, RefreshCw } from 'lucide-react';
 import { masterDataService } from '../services/api';
 
 const tableHeaders = ['ID', 'Nama Supplier', 'Kontak', 'Alamat', 'Tanggal Terdaftar'];

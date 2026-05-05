@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '../layouts/Layout';
 import { DataTable } from '../components/DataTable';
-import { Search, Plus, RefreshCw, Trash2, Truck } from 'lucide-react';
+import { Search, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { shippingService, productService } from '../services/api';
 
 const tableHeaders = ['Shipment ID', 'Destination', 'Product SKU', 'Qty', 'Courier', 'Status', 'Date', 'Aksi'];
