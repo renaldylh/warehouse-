@@ -1,112 +1,168 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '../layouts/Layout';
-import { SummaryCard } from '../components/SummaryCard';
-import { DataTable } from '../components/DataTable';
-import { Package, Inbox, ShoppingCart, Truck, RefreshCw, Download } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { 
+  Package, 
+  ShoppingCart, 
+  TrendingUp, 
+  AlertCircle, 
+  ArrowUpRight, 
+  ArrowDownRight,
+  Clock
+} from 'lucide-react';
 import { dashboardService } from '../services/api';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area 
+} from 'recharts';
 
 const chartData = [
-  { name: 'Inventory', value: 400 },
-  { name: 'Receiving', value: 300 },
-  { name: 'Order', value: 300 },
-  { name: 'Shipping', value: 200 },
-];
-
-const COLORS = ['#6366f1', '#8b5cf6', '#f59e0b', '#3b82f6'];
-
-const tableHeaders = ['ID', 'Nama Barang', 'Kategori', 'Status', 'Tanggal'];
-const tableData = [
-  ['#001', 'Kaos Polos Cotton Combed', 'Baju', 'Ready', '2026-04-23'],
-  ['#002', 'Hoodie Oversized Black', 'Jaket', 'Process', '2026-04-23'],
-  ['#003', 'Kemeja Flanel Slim Fit', 'Kemeja', 'Ready', '2026-04-22'],
-  ['#004', 'Jeans Denim Blue', 'Celana', 'Ready', '2026-04-22'],
-  ['#005', 'T-Shirt Printing Anime', 'Baju', 'Process', '2026-04-22'],
+  { name: 'Mon', sales: 4000, inventory: 2400 },
+  { name: 'Tue', sales: 3000, inventory: 1398 },
+  { name: 'Wed', sales: 2000, inventory: 9800 },
+  { name: 'Thu', sales: 2780, inventory: 3908 },
+  { name: 'Fri', sales: 1890, inventory: 4800 },
+  { name: 'Sat', sales: 2390, inventory: 3800 },
+  { name: 'Sun', sales: 3490, inventory: 4300 },
 ];
 
 export const Dashboard = () => {
-  const [stats, setStats] = useState({
-    inventory_count: 0,
-    receiving_count: 0,
-    order_count: 0,
-    shipping_count: 0,
-  });
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-      const data = await dashboardService.getStats();
-      setStats(data);
-    } catch (error) {
-      console.error('Failed to fetch stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await dashboardService.getStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchStats();
   }, []);
 
+  const statCards = [
+    { 
+      label: 'Total SKU', 
+      value: stats?.total_products || '0', 
+      icon: Package, 
+      color: 'bg-blue-500', 
+      trend: '+12%', 
+      isPositive: true 
+    },
+    { 
+      label: 'Pesanan Aktif', 
+      value: stats?.total_orders || '0', 
+      icon: ShoppingCart, 
+      color: 'bg-emerald-500', 
+      trend: '+5%', 
+      isPositive: true 
+    },
+    { 
+      label: 'Stok Menipis', 
+      value: stats?.low_stock_count || '0', 
+      icon: AlertCircle, 
+      color: 'bg-amber-500', 
+      trend: '-2%', 
+      isPositive: false 
+    },
+    { 
+      label: 'Total Nilai Aset', 
+      value: `Rp ${(stats?.total_value || 0).toLocaleString()}`, 
+      icon: TrendingUp, 
+      color: 'bg-violet-500', 
+      trend: '+18%', 
+      isPositive: true 
+    },
+  ];
+
   return (
-    <Layout title="Dashboard">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-hide">
-          <button 
-            onClick={fetchStats}
-            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary-600 flex-shrink-0"
-          >
-            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-          </button>
-        </div>
-        
-        <button className="w-full sm:w-auto px-6 py-2 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 flex items-center justify-center gap-2 shadow-md shadow-primary-100 transition-all">
-          <Download size={18} />
-          Export File
-        </button>
+    <Layout title="Warehouse Overview">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((card, i) => (
+          <div key={i} className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div className="flex justify-between items-start mb-4">
+              <div className={`${card.color} w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                <card.icon size={24} />
+              </div>
+              <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${card.isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                {card.isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                {card.trend}
+              </div>
+            </div>
+            <div>
+              <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">{card.label}</p>
+              <h3 className="text-2xl font-black text-slate-800">{loading ? '...' : card.value}</h3>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
-        <SummaryCard label="Inventory" value={stats.inventory_count.toLocaleString()} icon={Package} color="indigo" />
-        <SummaryCard label="Receiving" value={stats.receiving_count.toLocaleString()} icon={Inbox} color="emerald" />
-        <SummaryCard label="Order" value={stats.order_count.toLocaleString()} icon={ShoppingCart} color="amber" />
-        <SummaryCard label="Shipping" value={stats.shipping_count.toLocaleString()} icon={Truck} color="blue" />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <div className="lg:col-span-2 overflow-hidden">
-          <DataTable title="Today Task" headers={tableHeaders} data={tableData} />
-        </div>
-        
-        <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-          <h3 className="font-bold text-slate-800 mb-4 lg:mb-6 text-sm lg:text-base">Distribution Overview</h3>
-          <div className="flex-1 h-64">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+        {/* Sales & Inventory Chart */}
+        <div className="lg:col-span-2 bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-xl font-black text-slate-800">Analisis Pergerakan Stok</h3>
+              <p className="text-slate-500 text-sm">Data 7 hari terakhir</p>
+            </div>
+            <select className="bg-slate-50 border-none rounded-xl px-4 py-2 text-sm font-bold text-slate-600 outline-none ring-1 ring-slate-200">
+              <option>Minggu Ini</option>
+              <option>Bulan Ini</option>
+            </select>
+          </div>
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: 'Inventory', value: stats.inventory_count },
-                    { name: 'Receiving', value: stats.receiving_count },
-                    { name: 'Order', value: stats.order_count },
-                    { name: 'Shipping', value: stats.shipping_count },
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {chartData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '10px' }}/>
-              </PieChart>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <Tooltip 
+                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                />
+                <Area type="monotone" dataKey="sales" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-black text-slate-800">Aktivitas Terbaru</h3>
+            <Clock className="text-slate-400" size={20} />
+          </div>
+          <div className="space-y-6 flex-1">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div key={item} className="flex gap-4 group cursor-pointer">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+                  <Package size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-800">Stok Masuk: SKU-00{item}</p>
+                  <p className="text-xs text-slate-400">2 jam yang lalu oleh Admin</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button className="w-full mt-8 py-3 text-sm font-bold text-primary-600 bg-primary-50 rounded-2xl hover:bg-primary-100 transition-colors">
+            Lihat Semua Aktivitas
+          </button>
         </div>
       </div>
     </Layout>

@@ -1,11 +1,12 @@
 package http
 
 import (
+	"encoding/csv"
+	"fmt"
 	"net/http"
 	"strconv"
 	"warehouse-wms-backend/internal/models"
 	"warehouse-wms-backend/internal/repository"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +19,10 @@ func NewProductHandler(repo repository.ProductRepository) *ProductHandler {
 }
 
 func (h *ProductHandler) GetAllProducts(c *gin.Context) {
-	products, err := h.repo.GetAll()
+	search := c.Query("search")
+	category := c.Query("category")
+
+	products, err := h.repo.GetAll(search, category)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -71,4 +75,32 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Product deleted"})
+}
+
+func (h *ProductHandler) ExportCSV(c *gin.Context) {
+	products, err := h.repo.GetAll("", "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Header("Content-Disposition", "attachment; filename=products.csv")
+	c.Header("Content-Type", "text/csv")
+
+	writer := csv.NewWriter(c.Writer)
+	defer writer.Flush()
+
+	// Write Header
+	writer.Write([]string{"ID", "SKU", "Name", "Category", "Stock", "Price"})
+
+	for _, p := range products {
+		writer.Write([]string{
+			fmt.Sprintf("%d", p.ID),
+			p.SKU,
+			p.Name,
+			p.Category,
+			fmt.Sprintf("%d", p.Stock),
+			fmt.Sprintf("%.2f", p.BasePrice),
+		})
+	}
 }

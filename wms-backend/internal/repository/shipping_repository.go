@@ -8,6 +8,7 @@ import (
 type ShippingRepository interface {
 	GetAll() ([]models.Shipping, error)
 	Create(shipping *models.Shipping) error
+	Delete(id uint) error
 }
 
 type shippingRepository struct {
@@ -26,4 +27,8 @@ func (r *shippingRepository) GetAll() ([]models.Shipping, error) {
 
 func (r *shippingRepository) Create(shipping *models.Shipping) error {
 	return r.db.Create(shipping).Error
+}
+
+func (r *shippingRepository) Delete(id uint) error {
+	return r.db.Delete(&models.Shipping{}, id).Error
 }

@@ -3,7 +3,6 @@ package http
 import (
 	"net/http"
 	"warehouse-wms-backend/internal/repository"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,22 +11,20 @@ type DashboardHandler struct {
 	orderRepo   repository.OrderRepository
 }
 
-func NewDashboardHandler(pRepo repository.ProductRepository, oRepo repository.OrderRepository) *DashboardHandler {
-	return &DashboardHandler{pRepo, oRepo}
+func NewDashboardHandler(productRepo repository.ProductRepository, orderRepo repository.OrderRepository) *DashboardHandler {
+	return &DashboardHandler{productRepo, orderRepo}
 }
 
 func (h *DashboardHandler) GetStats(c *gin.Context) {
-	inventoryCount, _ := h.productRepo.Count()
-	orderCount, _ := h.orderRepo.Count()
-	
-	// Mocking other counts for now as we don't have receiving/shipping models yet
-	receivingCount := 45
-	shippingCount := 8
+	totalProducts, _ := h.productRepo.Count()
+	totalOrders, _ := h.orderRepo.Count()
+	lowStockCount, _ := h.productRepo.CountLowStock(10) // Threshold of 10
+	totalValue, _ := h.productRepo.TotalValue()
 
 	c.JSON(http.StatusOK, gin.H{
-		"inventory_count": inventoryCount,
-		"receiving_count": receivingCount,
-		"order_count":     orderCount,
-		"shipping_count":   shippingCount,
+		"total_products":  totalProducts,
+		"total_orders":    totalOrders,
+		"low_stock_count": lowStockCount,
+		"total_value":     totalValue,
 	})
 }
