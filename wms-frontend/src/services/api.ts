@@ -81,6 +81,9 @@ export const productService = {
   },
   exportCSV: () => {
     window.open(`${API_URL}/products/export/csv`, '_blank');
+  },
+  printLabel: (id: number) => {
+    window.open(`${API_URL}/products/print/${id}`, '_blank');
   }
 };
 
@@ -97,6 +100,9 @@ export const orderService = {
     const response = await api.delete(`/orders/${id}`);
     return response.data;
   },
+  printInvoice: (id: number) => {
+    window.open(`${API_URL}/orders/print/${id}`, '_blank');
+  }
 };
 
 export const receivingService = {

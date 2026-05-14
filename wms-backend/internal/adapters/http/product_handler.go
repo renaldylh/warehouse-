@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"warehouse-wms-backend/internal/models"
 	"warehouse-wms-backend/internal/repository"
+	"warehouse-wms-backend/pkg/report"
 	"github.com/gin-gonic/gin"
 )
 
@@ -103,4 +104,23 @@ func (h *ProductHandler) ExportCSV(c *gin.Context) {
 			fmt.Sprintf("%.2f", p.BasePrice),
 		})
 	}
+}
+
+func (h *ProductHandler) PrintLabel(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	product, err := h.repo.GetByID(uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+		return
+	}
+
+	pdf, err := report.GenerateProductLabel(product)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate PDF"})
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf("inline; filename=label-%s.pdf", product.SKU))
+	pdf.Output(c.Writer)
 }

@@ -12,10 +12,11 @@ type MasterDataHandler struct {
 	suppRepo  repository.SupplierRepository
 	custRepo  repository.CustomerRepository
 	whRepo    repository.WarehouseRepository
+	auditRepo repository.ActivityLogRepository
 }
 
-func NewMasterDataHandler(suppRepo repository.SupplierRepository, custRepo repository.CustomerRepository, whRepo repository.WarehouseRepository) *MasterDataHandler {
-	return &MasterDataHandler{suppRepo, custRepo, whRepo}
+func NewMasterDataHandler(suppRepo repository.SupplierRepository, custRepo repository.CustomerRepository, whRepo repository.WarehouseRepository, auditRepo repository.ActivityLogRepository) *MasterDataHandler {
+	return &MasterDataHandler{suppRepo, custRepo, whRepo, auditRepo}
 }
 
 // Suppliers
@@ -35,6 +36,16 @@ func (h *MasterDataHandler) CreateSupplier(c *gin.Context) {
 		return
 	}
 	h.suppRepo.Create(&supp)
+	
+	userID, _ := c.Get("userID")
+	h.auditRepo.Create(&models.ActivityLog{
+		UserID:   userID.(uint),
+		Action:   "CREATE",
+		Entity:   "SUPPLIER",
+		EntityID: supp.ID,
+		Details:  "Created supplier: " + supp.Name,
+	})
+
 	c.JSON(http.StatusCreated, supp)
 }
 
@@ -55,6 +66,16 @@ func (h *MasterDataHandler) CreateCustomer(c *gin.Context) {
 		return
 	}
 	h.custRepo.Create(&cust)
+
+	userID, _ := c.Get("userID")
+	h.auditRepo.Create(&models.ActivityLog{
+		UserID:   userID.(uint),
+		Action:   "CREATE",
+		Entity:   "CUSTOMER",
+		EntityID: cust.ID,
+		Details:  "Created customer: " + cust.Name,
+	})
+
 	c.JSON(http.StatusCreated, cust)
 }
 
@@ -75,6 +96,16 @@ func (h *MasterDataHandler) CreateWarehouse(c *gin.Context) {
 		return
 	}
 	h.whRepo.Create(&wh)
+
+	userID, _ := c.Get("userID")
+	h.auditRepo.Create(&models.ActivityLog{
+		UserID:   userID.(uint),
+		Action:   "CREATE",
+		Entity:   "WAREHOUSE",
+		EntityID: wh.ID,
+		Details:  "Created warehouse: " + wh.Name,
+	})
+
 	c.JSON(http.StatusCreated, wh)
 }
 

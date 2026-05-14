@@ -122,11 +122,15 @@ export const Dashboard = () => {
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <AreaChart data={stats?.movement_data || []}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorInv" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -136,6 +140,7 @@ export const Dashboard = () => {
                   contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                 />
                 <Area type="monotone" dataKey="sales" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+                <Area type="monotone" dataKey="inventory" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorInv)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -148,17 +153,29 @@ export const Dashboard = () => {
             <Clock className="text-slate-400" size={20} />
           </div>
           <div className="space-y-6 flex-1">
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="flex gap-4 group cursor-pointer">
-                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+            {stats?.recent_activities?.map((log: any) => (
+              <div key={log.id} className="flex gap-4 group cursor-pointer">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                  log.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                }`}>
                   <Package size={20} />
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-800">Stok Masuk: SKU-00{item}</p>
-                  <p className="text-xs text-slate-400">2 jam yang lalu oleh Admin</p>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-slate-800">
+                    {log.type === 'IN' ? 'Masuk' : 'Keluar'}: {log.product?.sku}
+                  </p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {log.quantity} Unit - {log.reason}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    {new Date(log.created_at).toLocaleString()}
+                  </p>
                 </div>
               </div>
             ))}
+            {(!stats?.recent_activities || stats.recent_activities.length === 0) && (
+              <p className="text-center text-slate-400 text-sm py-10">Belum ada aktivitas.</p>
+            )}
           </div>
           <button className="w-full mt-8 py-3 text-sm font-bold text-primary-600 bg-primary-50 rounded-2xl hover:bg-primary-100 transition-colors">
             Lihat Semua Aktivitas

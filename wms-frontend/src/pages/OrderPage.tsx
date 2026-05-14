@@ -77,7 +77,7 @@ export const OrderPage = () => {
       {o.status === 'pending' && <button onClick={() => handleUpdateStatus(o.id, 'picked')} className="p-2 text-slate-400 hover:text-blue-600" title="Mark as Picked"><Box size={16}/></button>}
       {o.status === 'picked' && <button onClick={() => handleUpdateStatus(o.id, 'packed')} className="p-2 text-slate-400 hover:text-indigo-600" title="Mark as Packed"><CheckCircle2 size={16}/></button>}
       {o.status === 'packed' && <button onClick={() => handleUpdateStatus(o.id, 'shipping')} className="p-2 text-slate-400 hover:text-emerald-600" title="Ship Now"><Truck size={16}/></button>}
-      <button className="text-slate-400 hover:text-primary-600 p-2"><Printer size={16}/></button>
+      <button onClick={() => orderService.printInvoice(o.id)} className="text-slate-400 hover:text-primary-600 p-2" title="Download Invoice PDF"><Printer size={16}/></button>
     </div>
   ]);
 

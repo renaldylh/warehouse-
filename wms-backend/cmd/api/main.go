@@ -41,17 +41,18 @@ func main() {
 	suppRepo := repository.NewSupplierRepository(database.DB)
 	custRepo := repository.NewCustomerRepository(database.DB)
 	whRepo := repository.NewWarehouseRepository(database.DB)
+	auditRepo := repository.NewActivityLogRepository(database.DB)
 
 	// 5. Initialize Handlers
 	authHandler := http_handler.NewAuthHandler(userRepo)
 	productHandler := http_handler.NewProductHandler(productRepo)
-	dashboardHandler := http_handler.NewDashboardHandler(productRepo, orderRepo)
+	dashboardHandler := http_handler.NewDashboardHandler(productRepo, orderRepo, stockLogRepo, auditRepo)
 	// Pass DB to handlers that need transactions
 	orderHandler := http_handler.NewOrderHandler(database.DB, orderRepo, productRepo, stockLogRepo)
 	receivingHandler := http_handler.NewReceivingHandler(database.DB, receivingRepo, productRepo, stockLogRepo)
 	shippingHandler := http_handler.NewShippingHandler(database.DB, shippingRepo, productRepo, stockLogRepo)
 	marketplaceHandler := http_handler.NewMarketplaceHandler(productRepo)
-	masterDataHandler := http_handler.NewMasterDataHandler(suppRepo, custRepo, whRepo)
+	masterDataHandler := http_handler.NewMasterDataHandler(suppRepo, custRepo, whRepo, auditRepo)
 
 	// 6. Initialize Gin
 	gin.SetMode(gin.ReleaseMode)
@@ -80,13 +81,16 @@ func main() {
 		protected.Use(middleware.AuthMiddleware())
 		{
 			protected.GET("/dashboard/stats", dashboardHandler.GetStats)
+			protected.GET("/dashboard/activities", dashboardHandler.GetAllActivities)
 			protected.GET("/products", productHandler.GetAllProducts)
 			protected.POST("/products", productHandler.CreateProduct)
 			protected.GET("/products/export/csv", productHandler.ExportCSV)
+			protected.GET("/products/print/:id", productHandler.PrintLabel)
 
 			protected.GET("/orders", orderHandler.GetAllOrders)
 			protected.POST("/orders", orderHandler.CreateOrder)
 			protected.DELETE("/orders/:id", orderHandler.DeleteOrder)
+			protected.GET("/orders/print/:id", orderHandler.PrintInvoice)
 
 			protected.GET("/receiving", receivingHandler.GetAllReceivings)
 			protected.POST("/receiving", receivingHandler.CreateReceiving)

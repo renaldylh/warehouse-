@@ -6,6 +6,7 @@ import (
 	"warehouse-wms-backend/internal/models"
 	"warehouse-wms-backend/internal/repository"
 	"warehouse-wms-backend/pkg/logger"
+	"warehouse-wms-backend/pkg/report"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"go.uber.org/zap"
@@ -94,4 +95,23 @@ func (h *OrderHandler) DeleteOrder(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Order deleted"})
+}
+
+func (h *OrderHandler) PrintInvoice(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	order, err := h.repo.GetByID(uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
+		return
+	}
+
+	pdf, err := report.GenerateOrderInvoice(order)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate PDF"})
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf("inline; filename=invoice-%s.pdf", order.OrderNumber))
+	pdf.Output(c.Writer)
 }

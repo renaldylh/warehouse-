@@ -46,6 +46,7 @@ func ConnectDB() {
 		&models.Warehouse{},
 		&models.Supplier{},
 		&models.Customer{},
+		&models.ActivityLog{},
 	)
 
 	DB = db

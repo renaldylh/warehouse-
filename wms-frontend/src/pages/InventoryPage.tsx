@@ -62,32 +62,8 @@ export const InventoryPage = () => {
     }
   }, [isScannerOpen]);
 
-  const handlePrintLabel = (product: any) => {
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Label - ${product.sku}</title>
-            <style>
-              body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-              .label { border: 2px solid black; padding: 20px; width: 300px; text-align: center; }
-              .sku { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-              .barcode { background: #000; height: 60px; width: 100%; margin-bottom: 10px; }
-            </style>
-          </head>
-          <body>
-            <div class="label">
-              <div class="sku">${product.sku}</div>
-              <div class="name">${product.name}</div>
-              <div class="barcode"></div>
-            </div>
-            <script>window.print(); window.close();</script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+  const handlePrintLabel = (id: number) => {
+    productService.printLabel(id);
   };
 
   useEffect(() => {
@@ -121,7 +97,7 @@ export const InventoryPage = () => {
       {p.stock > 50 ? 'Stocked' : p.stock > 10 ? 'Low Stock' : 'Critical'}
     </span>,
     <div className="flex items-center gap-2">
-      <button onClick={() => handlePrintLabel(p)} className="p-2 text-slate-400 hover:text-primary-600 transition-colors">
+      <button onClick={() => handlePrintLabel(p.id)} className="p-2 text-slate-400 hover:text-primary-600 transition-colors" title="Print Label PDF">
         <Printer size={16} />
       </button>
       <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors">

@@ -119,3 +119,14 @@ type StockLog struct {
 	CreatedBy uint      `json:"created_by"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type ActivityLog struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	UserID    uint      `json:"user_id"`
+	User      User      `gorm:"foreignKey:UserID" json:"user"`
+	Action    string    `json:"action"` // CREATE, UPDATE, DELETE
+	Entity    string    `json:"entity"` // PRODUCT, SUPPLIER, etc
+	EntityID  uint      `json:"entity_id"`
+	Details   string    `json:"details"`
+	CreatedAt time.Time `json:"created_at"`
+}
