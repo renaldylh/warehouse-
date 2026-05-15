@@ -11,8 +11,6 @@ import {
 } from 'lucide-react';
 import { dashboardService } from '../services/api';
 import { 
-  BarChart, 
-  Bar, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -22,15 +20,6 @@ import {
   Area 
 } from 'recharts';
 
-const chartData = [
-  { name: 'Mon', sales: 4000, inventory: 2400 },
-  { name: 'Tue', sales: 3000, inventory: 1398 },
-  { name: 'Wed', sales: 2000, inventory: 9800 },
-  { name: 'Thu', sales: 2780, inventory: 3908 },
-  { name: 'Fri', sales: 1890, inventory: 4800 },
-  { name: 'Sat', sales: 2390, inventory: 3800 },
-  { name: 'Sun', sales: 3490, inventory: 4300 },
-];
 
 export const Dashboard = () => {
   const [stats, setStats] = useState<any>(null);

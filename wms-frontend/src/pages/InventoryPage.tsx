@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '../layouts/Layout';
 import { DataTable } from '../components/DataTable';
-import { Search, Filter, Plus, RefreshCw, ShoppingCart, Printer, Trash2, Edit, Scan, Download } from 'lucide-react';
+import { Search, Plus, RefreshCw, ShoppingCart, Printer, Edit, Scan, Download } from 'lucide-react';
 import { productService, marketplaceService } from '../services/api';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
@@ -53,8 +53,8 @@ export const InventoryPage = () => {
         setSearchTerm(decodedText);
         setIsScannerOpen(false);
         scanner.clear();
-      }, (error) => {
-        // console.warn(error);
+      }, () => {
+        // Suppress error
       });
       return () => {
         scanner.clear();
